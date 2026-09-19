@@ -1,0 +1,27 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pip Helper</title>
+<style>
+body{margin:0;font-family:Arial;background:#f7f5fb;color:#171226}.app{max-width:760px;margin:auto;padding:12px}
+header{background:#191329;color:white;border-radius:0 0 28px 28px;padding:24px;text-align:center}h1{margin:0}.sub{opacity:.8}
+.card{background:white;border-radius:24px;padding:20px;margin:16px 0;box-shadow:0 4px 18px #0001}
+.live,.ask{width:100%;border:0;border-radius:20px;padding:20px;background:#191329;color:white;font-size:20px;font-weight:bold}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tile{border:0;border-radius:20px;padding:20px;background:#f0edf5;font-weight:bold;font-size:17px;min-height:105px}.tile b{display:block;font-size:28px;margin-bottom:8px}
+textarea{width:100%;min-height:110px;border:1px solid #ddd7e6;border-radius:16px;padding:14px;font-size:17px;box-sizing:border-box}.ask{margin-top:12px;background:#6331ff}
+#reply{display:none;margin-top:15px;background:#f0edf5;border-radius:16px;padding:16px;white-space:pre-wrap;line-height:1.5}#status{margin-top:12px;color:#777}
+</style></head><body><div class="app">
+<header><h1>Pip Helper</h1><div class="sub">Your AI friend</div></header>
+<div class="card"><h2>Hello! I'm Pip</h2><p>I can help with languages, translations, corrections, explanations and more.</p><button class="live" onclick="alert('Live voice comes next. First we connect real AI Chat.')">TALK LIVE</button></div>
+<div class="grid">
+<button class="tile" onclick="focusChat()"><b>CHAT</b>Chat with Pip</button>
+<button class="tile" onclick="prompt('Teach me a language step by step.')"><b>LANG</b>Learn a Language</button>
+<button class="tile" onclick="prompt('Translate this: ')"><b>TRANSLATE</b>Translate</button>
+<button class="tile" onclick="prompt('Correct my sentence and explain it: ')"><b>CHECK</b>Correct Me</button>
+<button class="tile" onclick="alert('Photo editing is coming next.')"><b>PHOTO</b>Edit Photo</button>
+<button class="tile" onclick="prompt('Explain this simply: ')"><b>LEARN</b>Explain / Learn</button>
+</div>
+<div class="card" id="chat"><h2>Chat with Pip</h2><p>Ask Pip anything.</p><textarea id="msg" placeholder="Type your message here..."></textarea><button class="ask" id="btn" onclick="ask()">Ask Pip</button><div id="status"></div><div id="reply"></div></div>
+</div>
+<script>
+function focusChat(){document.getElementById('chat').scrollIntoView({behavior:'smooth'});document.getElementById('msg').focus()}
+function prompt(x){document.getElementById('msg').value=x;focusChat()}
+async function ask(){let m=document.getElementById('msg').value.trim(),b=document.getElementById('btn'),s=document.getElementById('status'),r=document.getElementById('reply');if(!m){s.textContent='Type a message first.';return}b.disabled=true;b.textContent='Pip is thinking...';s.textContent='';r.style.display='none';try{let x=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:m})}),d=await x.json();if(!x.ok)throw Error(d.error);r.textContent=d.reply;r.style.display='block'}catch(e){s.textContent='Connection problem: '+e.message}finally{b.disabled=false;b.textContent='Ask Pip'}}
+</script></body></html>
