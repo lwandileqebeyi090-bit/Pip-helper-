@@ -1,2 +1,47 @@
-const express=require("express");const OpenAI=require("openai");require("dotenv").config();const app=express();app.use(express.json());app.use(express.static("public"));const client=process.env.OPENAI_API_KEY?new OpenAI({apiKey:process.env.OPENAI_API_KEY}):null;
-app.post("/api/chat",async(req,res)=>{try{if(!client)return res.status(500).json({error:"OPENAI_API_KEY is not configured yet."});const message=String(req.body.message||"").trim();if(!message)return res.status(400).json({error:"Please enter a message."});const response=await client.responses.create({model:process.env.OPENAI_MODEL||"gpt-5.6-luna",instructions:"You are Pip, a friendly multilingual AI assistant. Help users learn English, isiXhosa, isiZulu and other languages. Correct gently, translate accurately and explain clearly. Reply in the user's language when appropriate.",input:message});res.json({reply:response.output_text||"No reply generated."})}catch(e){console.error(e);res.status(500).json({error:"Pip could not answer. Check the API setup."})}});app.listen(process.env.PORT||3000,()=>console.log("Pip Helper running"));
+
+const express = require("express");
+
+const app = express();
+app.use(express.json());
+
+app.get("/", (req, res) => {
+  res.json({
+    name: "Pip Helper AI",
+    status: "online",
+    message: "Welcome to Pip Helper!"
+  });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    assistant: "Pip Helper AI"
+  });
+});
+
+app.post("/api/chat", async (req, res) => {
+  try {
+    const message = req.body.message;
+
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({
+        error: "Please enter a message."
+      });
+    }
+
+    res.json({
+      reply: "Pip Helper has received your message: " + message
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: "Something went wrong."
+    });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Pip Helper running on port " + PORT);
+});
+
